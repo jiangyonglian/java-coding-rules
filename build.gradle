@@ -20,7 +20,8 @@ apply plugin: 'org.asciidoctor.gradle.asciidoctor'
 asciidoctor {
     dependsOn 'clean'
     requires = ['asciidoctor-diagram']
-    backends = ['html5', 'pdf']
+    sourceDir = file('.')
+    backends = ['html5']
     outputDir = file('build')
     separateOutputDirs = false
     attributes = [
