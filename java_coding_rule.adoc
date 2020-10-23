@@ -1,0 +1,1335 @@
+:toc:
+:sectnums:
+:toc-title: 目次
+:chapter-label:
+
+= Javaコーティング規約
+
+== ネーミングルール
+
+. 【必須】名称はアンダースコアまたはドルなど記号で始めたり、終わることにしてはいけない。
++
+.悪い例
+[source,java]
+----
+_name / __name / $name / name_ / name$ / name__
+----
+
+. 【必須】名称には英語と日本語のローマ字読みを混ぜない、日本語の変数名の使用も禁止とする。
++
+.悪い例
+[source,java]
+----
+  getHeyaList / shikakuName / int 人数 = 0;
+----
+
+. 【必須】クラス名にアッパー・キャメルケースを使用する。ただし、以下の略称は、例外として使用可能とする。 +
+   DO / BO / DTO / VO / PO / AO / UID
++
+.良い例
+[source,java]
+----
+  JavaServerlessPlatform / UserDO / XmlService / TcpUpdDeal / TaPromotion
+----
++
+.悪い例
+[source,java]
+----
+  javaserverlessjlatform / UserDo / XMLService / TCPUDPDeal / TAPromotion
+----
+
+. 【必須】メソッド名、引数名、メンバー変数名、ローカル変数名にローワー・キャメルケースを使用する。
++
+.良い例
+[source,java]
+----
+  localValue / getHttpMessage() / inputUserId 
+----
+
+. 【必須】定数名は、全部大文字の単語でアンダースコアで連結する。長くてもいいので、意味がはっきり分かる名称をつける。
++
+.良い例
+[source,java]
+----
+  MAX_STOCK_COUNT / CACHE_EXPIRED_TIME
+----
++
+.悪い例
+[source,java]
+----
+  MAX_COUNT / EXPIRED_TIME
+----
+
+. 【必須】抽象クラス名は、`Abstract`、あるいは、`Base` から始まる。例外クラス名は、`Exception` で終わる。テストクラス名は、テスト対象クラス名から始まり、`Test` で終わる。
++
+
+. 【必須】配列を宣言するときに、型名のすぐ後ろに `[]` をつける。
++
+.良い例
+[source,java]
+----
+int[] arrayNames;
+----
++
+.悪い例
+[source,java]
+----
+String args[];
+----
+
+. 【必須】クラスのboolean型のメンバー変数に `is` のプリフィクスをつけてはいけない。
++
+.悪い例
+[source,java]
+----
+class UserInfo {
+    private boolean isDeleted;
+}
+
+----
+
+. 【必須】パッケージ名は、小文字の単数形英単語を使用する。クラス名は、複数の意味があるときに、複数形を使用する。
++
+
+. 【必須】スーパークラスとサブクラスに同じのメンバー変数に同じ名称をつけてはいけない。同じメソッド中に、違うコードブロックの中で同じ変数名を使ってはいけない。setter/getter関数以外、引数名もメンバー変数名と同じ名前にしていはいけない。
++
+.悪い例
+[source,java]
+----
+class ConfusingName {
+    private int age;
+
+    pubic void getData(int age){ // 引数名は、メンバー変数名と同じ名前にしてはいけない。
+        if (condition) {
+            final int money = 0;
+            ... 
+        }
+
+        for (int i = 0; i < some; i++){
+            final int money = 0; // 同じメソッドの中で、同じ変数名moneyを使ってはいけない。
+        }
+    }
+}
+
+class SubConfusingName extends ConfusingName { 
+    // スーパークラスと同じメンバー変数名を使ってはいけない。
+    private int age; 
+}
+
+----
+
+. 【必須】一般的に理解されない略称名称を使ってはいけない。
++
+.悪い例
+[source,java]
+----
+AbstractClass  -> AbsClass
+condition      -> condi
+----
+
+. 【推奨】直観的、分かりやすい単語を組み合わせて、名称をつけること。
+
++
+
+.良い例
+[source,java]
+----
+AtomicReferenceFieldUpdater
+----
++
+.悪い例
+[source,java]
+----
+int a;
+----
+
+. 【推奨】定数と変数名に、そのタイプ・属性を表す名詞を最後につける。
++
+.良い例
+[source,java]
+----
+startTime / workQueue / nameList / TERMINATED_THREAD_COUNT
+----
++
+.悪い例
+[source,java]
+----
+startedAt / QueueOfWork / listName / COUNT_TERMINATED_THREAD
+----
+
+. 【推奨】インタフェース・クラスにデザイン・パターンを適用した場合、パターン名が分かるように命名する。
++
+.良い例
+[source,java]
+----
+public class OrderFactory;
+public class LoginProxy;
+public class ResourceObserver;
+----
+
+. 【推奨】インタフェースのメソッドに修飾子( `public` を含む) をつけない。また、インタフェースにメンバー変数を宣言しない。例外として、インタフェースに関連する定数を宣言することは可とする。
++
+.悪い例
+[source,java]
+----
+// インタフェースメソッドの宣言
+public abstract void doSomething();
+----
+
+. インタフェースと実装クラスのネーミングについて、以下の2つのルールがある。
++
+* 【必須】ServiceとRepository(DAO)において、内部実装クラスに `Impl` のサフィックスをつける。
++
+.良い例
+[source,java]
+----
+クラス CacheServiceImpl がインタフェース CacheService を実装する。
+
+----
+
+* 【推奨】何か機能をもつインタフェースの名称に、`-able` 形式の形容詞をつける。
++
+.良い例
+[source,java]
+----
+クラス AbstractTranslator がインタフェース Translatable を実装する。
+
+----
+
+. 【推奨】列挙型のクラス名に `Enum` のサフィックスをつける。メンバー名は、全部大文字の単語で、アンダースコアで連結する。
++
+.良い例
+[source,java]
+----
+ProcessStatusEnum のメンバー：　SUCCESS / UNKNOWN_REASON
+
+----
+
+. 【推奨】各レイヤのネーミングルール
++
+.. Service/Repository(DAO) 層のメソッドのネーミングルール
++
+* 一つのオブジェクトを取得するメソッド名に `get` のプリフィクスをつける。
+* 複数のオブジェクトを取得するメソッド名に `list` のプリフィクスをつける。
+* 数量を統計するメソッド名に `count` のプリフィクスをつける。
+* 追加のメソッド名に `save/insert` のプリフィクスをつける。
+* 削除のメソッド名に `remove/delete` のプリフィクスをつける。
+* 更新のメソッド名に `update` のプリフィクスをつける。
+.. ドメインモデルのネーミングルール
+* データ: xxxDO // xxxはテーブル名
+* 転送用データ: xxxDTO // xxxは業務領域の該当名称
+* 業務用データ: xxxBO // xxxは業務領域の該当名称
+* 表示用データ: xxxVO // xxxはWebページ名
+
+== 定数について
+
+. 【必須】ソースコードの中で文字列、数値の定数（いわゆるマジックナンバー）をそのまま記述してはいけない。
++
+.悪い例
+[source,java]
+----
+String key = "Id#branch_" + tradeId; // "Id#branch_"を定数として宣言すべき
+cache.put(key, value);
+int roomNumber = 32; // 32は何か特殊の初期値であれば、定数でその意味を分かる名前をつける。
+----
+
+. 【必須】long/Long型の値の最後に `L` をつける、`l` をつけてはいけない。
++
+.良い例
+[source,java]
+----
+long someData = 2L;
+----
++
+.悪い例
+[source,java]
+----
+long someData = 2l; // 数字 21 と間違いやすい
+----
+
+. 【推奨】一つの定数クラスにすべての定数を定義してはいけない。定数の種類をもとに、別々のクラスに分けて定義する。
++
+.良い例
+Cache関連の定数をクラス CacheConstsに、システム設定関連の定数をクラス ConfigConstsに宣言する。
+
+. 【推奨】定数定義をレイヤ化する。定数の共有範囲を考慮して、以下のように定数と定数クラスを定義する。
++
+* クラス内共有定数: クラス内で `private static final` を用いて、宣言する。
+* パッケージ内共有定数: パッケージ内で `constant` のサブパッケージを作成して、定数クラスを作成する。
+* プロジェクト内共有定数: 単独の `constant` のサブパッケージを作成して、定数クラスを作成する。
+
+. 【推奨】列挙可能な定数は、Enum型で定義すべき。特に、定数名以外の属性をつけたい場合は、Enum型で定義して、属性も宣言する。
++
+.良い例
+[source,java]
+----
+public enum SeasonEnum {
+    SPRING(1),SUMMER(2),AUTUMN(3),WINTER(4);
+
+    private int seq;
+
+    SeasonEnum(int seq) {
+        this.seq = seq;
+    }
+
+    public int getSeq(){
+        return seq;
+    }
+}
+----
+
+== ソースコード・フォーマット
+
+. 【必須】波括弧 `{}` の中に何もない場合は、 `{}` をそのまま記述する。それ以外の場合、以下のルールにしたがって、改行する。
++
+
+* `{` の前に改行しない
+* `{` の後で改行する。
+* `}` の前で改行
+* `}` の後に `else` があれば、改行しない。最後の `}` で改行する。
+
+. 【必須】「 `(` 」と文字の間にスペースをいれない、「 `)` 」の前にもスペースを入れない。「 `{` 」 の前スペースをいれる。
++
+
+. 【必須】`if/for/while/switch/do` などの予約語と括弧の間にスペースを入れる。
++
+
+. 【必須】演算子(`=` を含む)の左と右にスペース一個を入れる。
++
+
+. 【必須】字下げ（インデント）に4個のスペースを入れる。`\t` (Tab)は使用禁止。
++
+.良い例
+[source,java]
+----
+public static void main(String[] args) {
+    // 4個のスペース
+    String say = "hello";
+    // 演算子の左と右にスペース一個を入れる
+    int flag = 0;
+    // 予約語と括弧の間に1個のスペースを入れる。括弧内では，f と ( の間、0 と ) の間にスペースを入れない
+    if (flag == 0) {
+        System.out.println(say);
+    }
+    // { の前にスペースをいれて、改行する
+    if (flag == 1) {
+        System.out.println("world");
+    // } の前で改行、} の後に else があるので、改行しない
+    } else {
+        System.out.println("ok");
+    // } で終了するので、改行
+    }
+}    
+----
+
+. 【必須】行コメントにおいて、`//` とコメント内容の間に1個のスペースを入れる。
++
+.良い例
+[source,java]
+----
+// コメントの例
+String result = callSomeMethod();
+----
+
+. 【必須】型強制変換を行う場合、`)` と変換対象の間にスペースを入れない。
++
+.良い例
+[source,java]
+----
+long first = 10000000000L;
+int second = (int)first + 2;
+----
+
+. 【必須】一行の文字数は最大120とする。120を超えた場合、改行する。改行ルールは、以下の通り。
++
+* 第二行に4個のスペースで字下げする。3行目以後は、字下げしない。
+* 演算子と其の後の文字と一緒に改行する。
+* メソッドの呼び出しは、`.` と一緒に改行する。
+* メソッドの呼び出しに複数の引数があって改行が必要な場合、`,` の後で改行する。
+* `(` の前で改行しない。
++
+.良い例
+[source,java]
+----
+StringBuilder sb = new StringBuilder();
+// 120文字を超えた場合、改行する
+sb.append("first").append("Second")...
+    .append("something")...
+    .append("something")...
+    .append("something");
+----
++
+.悪い例
+[source,java]
+----
+StringBuilder sb = new StringBuilder();
+// 120文字を超えた場合、( の前で改行しない
+sb.append("first").append("Second")...append
+    ("something");
+
+// , の前で改行しない
+method(args1, args2, args3, ...
+    , argsX);
+----
+
+. 【必須】メソッドに複数の引数がある場合、`,` の後ろに1個のスペースを入れる。
++
+.良い例
+[source,java]
+----
+doSomething(args1, args2, args3);
+----
+
+. 【必須】ソースファイルのエンコードに `UTF-8` を設定する。`Unix` の改行符を使用する。
++
+
+. 【推奨】1個のメソッドの最大行数は、80とする。メソッドの宣言行から、`{` と `}` の行 、空行も含めてすべての行の総数は80を超えてはいけない。
++
+
+. 【推奨】`=` を揃うために、スペースを入れる必要がない。
++
+.良い例
+[source,java]
+----
+int one = 1;
+long two = 2L;
+float three = 3F;
+StringBuilder sb = new StringBuilder();
+----
+
+. 【推奨】違うロジック、違う目的の業務ロジックのソースコードの間に空行を入れて、可読性を向上させる。ただし、複数の空行を入れる必要がない。
+
+== 制御ステートメント
+
+. 【必須】 `swtich` 文では、 `case` 文が `continue/break/return` で終了するか、コメントを追加して、どの `case` 文まで実行するか説明する。また、 `swtich` の最後に必ず `default` 文を入れる。
++
+
+. 【必須】 `swtich` 文の括弧の変数が `String` であり、かつ、外部から指定された引数である場合は、必ず先に `null` 判定を行うべき。
++
+.悪い例
+[source,java]
+----
+public class SwitchString {
+    public static void main(String[] args) {
+        method(null); // NullPointerExceptionが発生
+    }
+    public static void method(String param) {
+        switch (param) {
+            case "sth":
+                System.out.println("it's sth");
+                break;
+            case "null":
+                System.out.println("it's null");
+                break;
+            default:
+                System.out.println("default");
+        }
+    }
+}
+----
+
+. 【必須】 `if/else/for/while/do` ステートメントに波括弧 `{}` を使用する。
++
+.悪い例
+[source,java]
+----
+if (contition) statements;
+----
+
+. 【必須】異常条件の処理に、 `if-else` を避けるべき。 `if ()...else if() else...` の使用は、3階層までとする。代わりに、早めに処理を中断させるべきである。 
++
+
+.良い例
+[source,java]
+----
+public void findBoyfriend(Man man) {
+    if (man.isUgly()) {
+        System.out.println("No,thanks.");
+        return;
+    }
+    if (man.isPoor()) {
+        System.out.println("I'm sorry.");
+        return;
+    }
+    if (man.isBadTemper()) {
+        System.out.println("Get out!");
+        return;
+    }
+    System.out.println("It's OK.");
+}
+
+----
+
+. 【推奨】値が取得するメソッド( `getXxx/isXXX` )以外、条件判定文に複雑のステートメントを実行しない。判定結果を `boolean` 型の変数に設定して、可読性を向上させる。
++
+.良い例
+[source,java]
+----
+final boolean existed = (file.open(fileName, "w") != null) && (...) || (...);
+if (existed) {
+    // do something
+}
+----
++
+.悪い例
+[source,java]
+----
+if (!tryAcquire(arg) &&
+    acquireQueued(addWaiter(Node.EXCLUSIVE), arg)) {
+    // do something
+}
+----
+
+. 【推奨】代入ステートメントを他の式に挿入しないこと
++
+.悪い例
+[source,java]
+----
+// countに値が設定される
+threshold = (count = Integer.MAX_VALUE) - 1;
+// sync == fair の間違い
+return (sync = fair) ? new FairSync() : new NonfairSync();
+----
+
+. 【推奨】性能を影響するため、ループの中にある以下の処理をできるだけループの外に移すべき。
++
+* オブジェクトの新規生成
+* データベース接続、ネットワーク接続
+* try-catch
+
+. 【推奨】わかりにくいため、 `!` （論理否定）をできるだけ使わない。
++
+.良い例
+[source,java]
+----
+if (x < 628)
+----
++
+.悪い例
+[source,java]
+----
+if (!(x >= 628))
+----
+
+. 【推奨】インタフェースの引数の値の有効性チェックを行うべき。
++
+
+. 【参考】以下の場合、メソッドの引数の有効性をチェックする。
++
+* 呼ばれる回数の少ないメソッド
+* 実行時間の長いメソッド。引数のエラーで長い実行時間が無駄になる可能性はある。
+* 高い可用性、安定性が求められるメソッド
+* 公開するインタフェースのメソッド
+* 権限チェックを行うメソッド
+
+. 【参考】以下の場合、メソッドの引数の有効性をチェックしなくていい。
+* ループの中に呼ばれるメソッド。ただし、該当メソッドのコメントに引数の条件を明記する。
+* 呼出し階層の中の最後にあるメソッド。例えば、Service層からDAO層のメソッドを呼出したとき、DAO層のメソッドの引数チェックを省略してもよい。（すでにService層で引数をチェックしたと考えられる）
+* privateのメソッド。そのメソッドに渡す引数の有効性を保証できれば、メソッドで引数をチェックしない。
+
+== コメント規約
+
+. 【必須】クラス、クラスの属性、メソッドのコメントをJavadocの標準形式 `/** 内容 */` で記述する。行コメント `// xxxx`  は使用禁止。
++
+
+. 【必須】抽象クラス、インタフェースののメソッドにJavadocを記述する。戻り値、引数、例外の説明以外、当メソッドが何をするか、どんな機能を実現するかを記述する。実装時の注意事項、呼出しの注意事項があれば、説明を記載する。
++
+
+. 【必須】クラスに作成者と作成日を記述する。
++
+
+. 【必須】メソッド内で、行コメント `// xxxx` を使用する。対象行の上にコメント行を記述。複数行のコメントに、 `/* */` を使用する。対象ソースコードと開始位置を揃えること。
++
+
+. 【必須】列挙型(Enum)の全てのメンバーにコメントを記述して、用途を説明する。
++
+
+. 【推奨】英語で正確、簡潔に説明できない場合、日本語で説明してもよい。
++
+
+. 【推奨】ソースコードを修正した後に、コメントも修正する。
++
+
+. 【必須】ソースコードをコメントした場合、説明も追加する。そのソースコードがいらない場合は、直接に削除する。
++
+
+. 【参考】コメントに対する考え方：
++
+* 設計とソースコードのロジックの内容を正確に反映する
+* 業務目的を説明して、ソース・コードの背景の理解を補助する。
+* コメントは、作成者のためだけではなく、後任者や、メンテナンス担当者に見せるものでもある。
+* コメントは、簡潔で正確でなければならない。
+* ソースコードが見てすぐに意味が分かれば、コメントが不要である。
+
+. 【参考】特殊な表記(todo、FIXMEなど)に、作成者、作成時間と予定処理時間をいれて、処理忘れを防ぐこと。
+
+== OOP規約
+
+. 【必須】クラスの `static` メソッドを呼び出すときに、「クラス名.メソッド名」の形で呼び出す。
++
+. 【必須】スーパークラスのメソッドをオーバーライドするときに、必ず `@Override` をつける。
++
+
+. 【必須】同じ型で、同じ意味の引数は、メソッドの可変引数として宣言する。ただし、引数の型に、Objectを避けるべき。
++
+.良い例
+[source,java]
+----
+public List<User> listUsers(String type, Long... ids){ ... }
+----
+
+. 【必須】推奨されない `(Deprecated)` プログラム要素 を使用しない。
++
+
+. 【必須】Object.equals()の呼出しは `NullPointerException` をスローする可能性があるので、定数か、値のあるオブジェクトの `equals()` メソッドを呼び出すべき。また、`java.util.Objects#equals` の使用を推奨する。
++
+.良い例
+[source,java]
+----
+"test".equals(object);
+Objects.equals(object,"test");
+----
++
+.悪い例
+[source,java]
+----
+object.equals("test");
+----
++
+
+. 【必須】すべての整数のラッパークラス('Integer' など)のオブジェクトの比較は、equalsメソッドで行うべき。
++
+.悪い例
+[source,java]
+----
+Integer first = 3000;
+Ingeger second = getFromSomeMethod();
+// first.equals(second)を使用すべき、以下の書き方はバグである。
+if (first == second) { ... }
+
+----
++
+
+. 【必須】 `float/double` 型の変数の比較は、　`==` と `equals` の両方を使ってはいけない。
++
+.悪い例
+[source,java]
+----
+float a = 1.0f - 0.9f;
+float b = 0.9f - 0.8f;
+
+if (a == b) {
+  // 実行されない
+}
+
+Float x =　Float.valueOf(a);
+Float y =　Float.valueOf(b);
+if (x.equals(y)) {
+  // 実行されない
+}
+
+----
++
+
+.良い例(1) 誤差を指定して比較を行う
+[source,java]
+----
+float a = 1.0f - 0.9f;
+float b = 0.9f - 0.8f;
+float diff = 1e-6f;
+
+if (Math.abs(a - b) < diff) {
+  // 実行される
+}
+----
++
+
+.良い例(2) BigDecimalを使用する
+[source,java]
+----
+BigDecimal a = new BigDecimal("1.0");
+BigDecimal b = new BigDecimal("0.9");
+BigDecimal c = new BigDecimal("0.8");
+
+BigDecimal x = a.substract(b);
+BigDecimal y = b.substract(c);
+if (x.equals(y)) {
+  // 実行される
+}
+----
++
+
+. 【必須】テータベースのテーブルに該当するクラスを定義するときに、フィールドの型の精度と同じ型の属性を宣言する。
++
+.悪い例
+テーブルの `bigint unsigned` 型のフィールドに、クラスで `int` 型の属性を宣言する。
+
+. 【必須】`BigDecimal` のコンストラクタに `dobule/float` 型の引数を指定してはいけない。
++
+.悪い例
+[source,java]
+----
+BigDecimal g = new BigDecimal(0.1f); // gの値は、0.10000000149になる
+----
++
+
+.良い例
+[source,java]
+----
+BigDecimal g1 = new BigDecimal("0.1"); // 基本は、こちを推奨
+BigDecimal g2 = BigDecimal.valueOf(0.1); // 内部で、0.1.toString()を呼出して、"0.1"になる
+----
++
+
+. プリミティブ型( `int` など)とそのラッパークラス型( `Integer` など)の使い分け
++
+* 【必須】すべてのPOJO(Plain Old Java Object)クラスの属性宣言にラッパークラス型を使用する。
+* 【必須】RPC(Remote Process Call)の戻り値と引数にオブジェクトラッパ型を使用する。
+* 【推奨】ローカル変数にプリミティブ型を使用する。
+
++ 
+. 【必須】POJOクラスの属性にデフォルト値を設定しない。
++
+.悪い例
+[source,java]
+----
+public class UserDO {
+  private Date createTime = new Date(); // 誤ってテーブルの値を更新する恐れがある。
+
+}
+
+----
++
+
+. 【必須】クラスに新しい属性を追加するときに、`serialVersionUID` の値を修正しない。修正したら、既存データの逆シリアル化で例外が発生する可能性がある。
++
+
+. 【必須】クラスのコンストラクタに業務ロジックを入れてはいけない。初期化のロジックがある場合、`init` のようなメソッドを別途作成する。
++
+
+. 【必須】POJOクラスに `toString()` メソッドを宣言する。IDEのツールを利用して、 `toString()` メソッドを生成できる。別のPOJOクラスを継承するときに、 `super.toString()` を先に呼び出すこと。
++
+
+. 【必須】POJOクラスの属性xxxに `isXxx()` と `getXxx()` を両方定義してはいけない。
++
+
+. 【推奨】`String.split()` の呼び出しで取得した配列の要素をアクセスするときに、配列の要素数をチェックする。
++
+.説明:
+[source,java]
+----
+String str = "a,b,c,,";
+String[] ary = str.split(",");
+System.out.println(ary.length); // 結果は、4 ではなく、3 である。
+----
+
+. 【推奨】クラスに複数のコンストラクタがある、或いは、複数の同じ名前のメソッドがある場合は、同じ所にまとめて定義する。また、本ルールは、次のルールより優先である。
++
+
+. 【推奨】クラスでメソッドを宣言するときの記述順序：public/protected > private > getter/setter
++
+
+. 【推奨】setterメソッドでは、引数名とメンバー属性名を同じにして、「this.属性名 = 引数名;」のように記述する。 getter/setterメソッドに、業務ロジックを入れない。
++
+.悪い例
+[source,java]
+----
+public Integer getData() {
+    if (condition) {
+        return this.data + 100;
+    } else {
+        return this.data - 100;
+    }
+}
+----
++
+
+. 【推奨】ループの中で文字列を連結するときに、 `StringBuilder.append()` を使用すべき。
++
+.悪い例
+[source,java]
+----
+String str = "start";
+for (int i = 0; i < 100; i++) {
+    str = str + "hello";
+}
+----
++
+
+. 【推奨】`final` 修飾子を積極的に使用する。
++
+* 継承させないクラス 
+* 修正できないメンバー属性
+* オーバーライドさせないメソッド
+* 修正させないローカル変数
++
+
+. 【推奨】`Object.clone()` を使用するときに、シャローコピーであるため、意図通りのコピーになるか慎重に判断すべき。
+
++ 
+. 【推奨】クラスのメンバーに厳格なアクセス制限をかける。
+* `new` でオブジェクトを生成させたくない場合は、すべてのコンストラクタを `private` にする。
+* ユーティリティ・クラスに `private` のコンストラクタを宣言する。
+* サブクラスに公開する `static` ではないメンバー属性に `protected` をつける。
+* クラス内のみで使用、`static` ではないメンバー属性に `private` をつける。
+* クラス内のみで使用、`static` なメンバー属性に `private` をつける。
+* `static` のメンバー属性は、`final` であるべきと判断した場合、`final` をつける。
+* クラス内のみで使用するメソッドに `private` をつける。
+* サブクラスで使用できるメソッドに `protected` をつける。
+
+== コレクション(Map、List、Set)について
+
+. 【必須】`hashCode` と `equals` に関するルール
++
+.. `equals` メソッドをオーバーライドしたら、必ず `hashCode` メソッドをオーバーライドする。
+.. `Set` に追加するオブジェクトが重複できないので、 `Set` に追加する自定義オブジェクトは、必ず `hashCode` と `equals` のメソッドをオーバライドする。
+.. `Map` のキーに自定義のオブジェクトを使用すれば、必ず `hashCode` と `equals` のメソッドをオーバライドする。
+
+. 【必須】 `ArrayList` の `subList` メソッドの戻り値を `ArrayList` に強制変換をしてはいけない。
++
+【説明】 `subList` メソッドの戻り値は、インナークラス `SubList` であり、 `ArraList` ではない、`ArraList` のビューである。ただし、 `SubList` に対しする操作は、元のリストに反映される。
+
+. 【必須】 `Map` のメソッド `keySet()/values()/entrySet()` の戻り値がコレクションであるが、それに要素を追加してはいけない。 `UnsupportedOperationException`　例外がスローされる。
++
+
+. 【必須】 `Collections` クラスのメソッドの戻り値(例: `emtpyList()/singletonList()` )は、全て `immutable list` であるため、要素の追加と削除をしてはいけない。
++
+
+. 【必須】 `subList` メソッドの戻り値に対して、要素の追加と削除をしてはいけない。 `ConcurrentModificationException` 例外がスローされる。
++
+
+. 【必須】コレクションを配列に変換するときに、コレクションの `toArray(T[] array)` メソッドを使用する。引数に、同じタイプのレングスが0である空配列を指定する。
++
+.良い例
+[source,java]
+----
+List<String> list = new ArrayList<>(2);
+list.add("apple");
+list.add("orange");
+String[] array = list.toArray(new String[0]);
+----
++ 
+.悪い例
+[source,java]
+----
+List<String> list = new ArrayList<>(2);
+list.add("apple");
+list.add("orange");
+// Object[]型のarrayを宣言しなけばならない、String[]型に変換できない
+Object[] array = list.toArray();
+----
++ 
+
+. 【必須】コレクションの `addAll()` メソッドを呼び出すときに、引数が `null` ではないことを保証しなけばならない。そうしないと、 `NullPointerException` がスローされる可能性がある。
++
+
+. 【必須】 `Arrays.asList()` を呼び出して、配列をリストに変換した後に、リストに対して要素を追加／削除をしてはいけない。 `asList()` の戻り値は、 `Arrays` のインナークラスであり、要素の追加／削除メソッドを実装していない。
++
+.悪い例
+[source,java]
+----
+String[] str = new String[] { "apple", "apple" }; 
+List list = Arrays.asList(str);
+list.add("banana"); // UnsupportedOperationExceptionが発生
+----
++
+
+. 【必須】 `foreach` ループの中で要素を追加／削除をしてはいけない。要素を削除するときに、 `Iterator` を使用する。マルチスレッド実行の場合、 `Iterator` の対象にロックをかける。
++
+.良い例
+[source,java]
+----
+List<String> list = new ArrayList<>();
+list.add("1");
+list.add("2");
+Iterator<String> iterator = list.iterator();
+while (iterator.hasNext()) {
+    String item = iterator.next();
+    if (condition) {
+        iterator.remove();
+    }
+}
+
+----
++
+
+.悪い例
+[source,java]
+----
+List<String> list = new ArrayList<>();
+list.add("1");
+list.add("2");
+for (String item : list) {
+if ("2".equals(item)) {
+    list.remove(item); // ConcurrentModificationExceptionが発生
+}
+
+----
++
+
+. 【必須】 `Comparator` を実装するクラスは、以下の三つの条件を満たす必要がある。そうでなければ、`Array.sort` と `Collections.sort` の実行で `IllegalArgumentException` 例外が発生する可能性がある。
++
+.. `x` と `y` の比較結果は、`y` と `x` の比較結果の逆である
+.. `x > y` 、 `y > z` の場合は、 `x > z` 
+.. `x = y` の場合は、 `x` と `z` の比較結果は、`y` と `z` の比較結果と同じである
++
+.悪い例
+[source,java]
+----
+new Comparator<Student>() {
+    @Override
+    public int compare(Student o1, Student o2) {
+        // equalの判定をしていないので、上記条件a)に違反する。実行時に例外は発生する可能性がある
+        return o1.getId() > o2.getId() ? 1 : -1;
+    }
+};
+----
+
++
+. 【推奨】ジェネリクス型を定義するときに、型推論を活用して、ダイヤモンド演算子( `<>` )を使用する。
++
+.良い例
+[source,java]
+----
+// ダイヤモンド演算子<>
+HashMap<String, String> userCache = new HashMap<>(16);
+----
++
+
+. 【推奨】性能向上のために、リストとマップ、セットを初期化するときに、初期サイズを指定する。
++
+.説明
+ * `HashMap(int initialCapacity)` で `Map` を初期化する。
+ * `initialCapacity` = 要素数 / `load_factor` + 1 
+ * `load_factor` は負荷係数である。デフォルト値: 0.75
+ * 要素の総数が不明の場合は、 `initialCapacity` にデフォルト値の16を指定する。
+
++
+. 【推奨】`Map` の全要素をスキャンする処理は、 `entrySet` メソッドを使用、 `keySet` を避けるべき。 `Map.forEach()` メソッドの使用もおすすめる。
++
+.説明 
+`values` メソッドは、値のコネクションを返す。  `keySet` メソッドは、キーのセットを返す。  `entrySet()` メソッドは、一回のスキャンでキーと値のセットを両方取得するため、効率がよい。
+
++
+. 【推奨】各種 `Map` のキーと値に `null` 値を設定できるか、以下の表を参照して、適切の `Map` クラスを選択する。
++
+.`Map` と `null` の関係
+[options="header"]
+|=================================
+|Mapクラス           |キー        |値       |スーパークラス|備考
+|Hashtable          |[red]#null不可#    |[red]#null不可# | Dictionary  | スレッドセーフ、性能がよくない
+|ConcurrentHashMap  |[red]#null不可#    |[red]#null不可# | AbstractMap | スレッドセーフ、性能がいい
+|TreeMap            |[red]#null不可#    |[blue]#null可#   | AbstractMap | スレッドセーフではない
+|HashMap            |[blue]#null可#      |[blue]#null可#   | AbstractMap | スレッドセーフではない
+|=================================
+
+. 【推奨】要素がソートされているか、 `foreach` で挿入順の通りに取得できるか、以下の表を参照して、適切のコレクションクラスを選択する。
++
+.コレクションの要素
+[options="header"]
+|=================================
+|クラス           |ソート    |挿入順 
+|ArrayList       |unsort    |order 
+|HashMap         |unsort    |unorder
+|HashSet         |unsort    |unorder
+|TreeMap         |sort      |order  
+|TreeSet         |sort      |order  
+|=================================
+
+
+. 【推奨】 `Set` に重複要素を追加できないため、コレクションに要素の存在を判定するには、 `List.contains()` より、 `Set.contains()` を使用すべき。
+
+== 例外処理
+
+. 【必須】 業務アプリケーションの開発では、`RuntimeException` 例外とそのサブ例外を  `catch` して処理しない。例： `NullPointerException`　、 `IndexOutOfBoundsExcetpion` など。ただし、文字列を数字に変換するときに、フォーマットエラーが存在する可能性がある場合、 `NumberFormatException` を `catch` してもよい。
++
+.悪い例
+[source,java]
+----
+try { 
+    obj.method(); 
+} catch (NullPointerException e) {
+    …
+}
+----
+
+. 【必須】ロジックのフロー制御に例外を利用してはいけない。例外処理の目的は、あくまても、プログラムが実行中に発生した異常状況を処理するためである。かつ、例外処理の性能は、条件判定よりはるかに悪い。
++
+. 【必須】例外を `catch` するときに、例外の種類ごとに分けて処理する。また、例外が発生しないソースコードを `try` の範囲外に移すべき。そうしないと、例外が発生したときに、例外の原因究明が困難になる。
++
+
+. 【必須】例外を `catch` して、そのまま廃棄してはいけない。処理できない場合は、呼び出す側にスローする。一番外にある業務プログラムは、必ず例外を処理して、ユーザが理解出来る内容に変換しなけばならない。
++
+. 【必須】手動でトランザクションを管理した場合、例外を `catch` したら、必ずトランザクションをロールバックする。
++
+. 【必須】 ファイル、ストリームをオープンしたら、`finally` ブロックで必ずクロースする。原則として、ファイル、ストリームの処理に、`try-with-resources` 方式を使用する。
++
+. 【必須】`finally` ブロックで `return` を使用しない。`try` で `return` を実行しても、 `finally` ブロックのステートメントを実行するので、そこに `return` があれば、そこでメソッドが終了する。
++
+.悪い例
+[source,java]
+----
+private int x = 0;
+public int checkReturn() {
+    try {
+        // x = 1、ここでメソッドが終了しない。
+        return ++x;
+    } finally {
+        // x = 2、戻り値が2である。
+        return ++x;
+    }
+}
+----
+
+. 【必須】キャッチした例外クラスは、スローした例外クラスと同じか、スローされた例外クラスのスーパークラスである必要がある。ただし、業務アプリケーションでは、 `Exception` と `Throwable` をキャッチしない。
++
+
+. 【必須】メソッドの戻り値が `null` になることがあれば、コメントで `null` になる条件を記述する。呼出し側で必ず `null` チェックを行う。
++
+
+. 【必須】業務アプリケーションで、 `RuntimeException` 、`Exception` 、 `Throwable` をスローしてはいけない。
++
+
+. 【推奨】NPE(NullPointerException)の発生を防止しなければならない。以下の個所を注意すること。
++
+* メソッドの戻り値がプリミティブ型であり、ラッパークラス型の変数をそのまま返す。
++
+.悪い例
+[source,java]
+----
+public int f() {
+  Integer result = ...;
+  return result; // resultがnullである場合、NPEが発生
+}
+----
+
+* データベースから取得した値が `null` である可能性
+*  `List/Map/Set` から取得した要素が `null` である可能性
+*  `Session` から取得したデータが `null` である可能性
+* チェインの呼び出し、 `obj.get().getB().getC())` でNPEが発生する可能性は高い。 `Optional` クラスの使用を推奨する。
+
+== ログ規約
+
+. 【必須】アプリケーションで、 `Log4J/LogBack` のAPIを直接に使用しない、 `SLF4J` のAPIを使用する。
++
+.良い例
+[source,java]
+----
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+....
+private static final Logger logger = LoggerFactory.getLogger(SomeClass.class);
+----
+
+. 【必須】ログファイルを15日以上に保存する。セキュリティ関連、ユーザ操作などの重要ログは、六カ月以上を保存する。
++
+
+. 【必須】ログファイル名は、以下の項目を含むべき。
++
+* appName:アプリケーション名
+* logType:ログの種類、例:stats/monitor/access
+* logName:ログの説明
++
+ログファイル名の構成例：appName_logType_logName.log
++
+. 【必須】ログの出力で、文字列変数を直接に連結しない、 `{}` で置換文字列を指定する。
++
+.良い例
+[source,java]
+----
+logger.debug("Processing trade with id:{} and symbol:{}",id,symbol);
+----
+
+. 【必須】置換文字列の生成にリソースと時間がかかる場合、 `trace/debug/info` のログを出力する前に、ログレベルを判定する。
++
+.良い例
+[source,java]
+----
+// getName()が重い処理である場合、logger.isDebugEnabled()が必須
+if (logger.isDebugEnabled()) { 
+  logger.debug("Current ID is: {} and name is: {}", id, getName()); 
+}
+----
+
+. 【必須】ログの重複出力を避けるべき。
++
+
+. 【必須】例外情報をログに出力するときに、発生した箇所の情報とスタークトレースを両方出力する。
++
+.良い例
+[source,java]
+----
+logger.error( 引数などの値 + "_" + e.getNessage(),e)
+----
+
+. 【推奨】本番環境でdebugログを出力しない。 `info` と `warn` レベルのログの出力量は、ディスクが容量不足にならないように注意する。
++
+
+. 【推奨】ユーザの入力エラーを `warn` レベルで出力する。 `error` ログは運用担当者に通知されるので、システムレベルのエラー、重大なエラー情報のみを記録する。
++
+
+. 【推奨】日本語を表示できないサーバ環境があるので、できるだけ英語でエラー情報をログに出力する。
+
+== 並行処理・マルチスレッド
+
+. 【必須】シングルトンのオブジェクトのスレッドセーフを保証する。そのメソッドもスレッドセーフでなければならない。
++
+
+. 【必須】スレッド、スレッドプールを生成するときに、意味あるのスレッド名称を指定する。エラーなったときの原因究明に備える。
++
+.良い例
+[source,java]
+----
+public class UserThreadFactory implements ThreadFactory { 
+
+    private final String namePrefix; 
+    private final AtomicInteger nextId = new AtomicInteger(1); 
+    // スレッド名を指定する
+    UserThreadFactory(String whatFeaturOfGroup) { 
+        namePrefix = "From UserThreadFactory's " + whatFeaturOfGroup + "-Worker-"; 
+    }
+
+    @Override public Thread newThread(Runnable task) { 
+        String name = namePrefix + nextId.getAndIncrement(); 
+        Thread thread = new Thread(null, task, name, 0, false);
+        return thread; 
+    } 
+}
+----
+
+. 【必須】スレッドの生成は、スレッドプールを通して生成する。アプリケーションでスレッドを直接に生成することは、禁止とする。スレッドプールは、スレッドの生成と終了時にかかった時間とシステムリソースを軽減して、リソースが足りない問題を解決する。
++
+
+. 【必須】 `Executors` を用いて、スレッドプールを生成してはいけない。 `ThreadPoolExecutor` を使用する。`Executors` が生成したスレッドプールに以下の欠点がある。
++
+*  `FixedThreadPool/SingleThreadPool` :リクエスト・キューのサイズが `Integer.MAX_VALUE` であるため、大量のリクエストが溜まる恐れがある。
+*  `CachedTheradPool`:生成できるスレッドの数が `Integer.MAX_VALUE` であるため、大量のスレッドを生成して、OOMが発生する恐れがある。
++
+
+. 【必須】 `SimpleDateFormat` はスレッドセーフではないため、 `static` 変数にしないこと。Java8にある `DateTimeFormatter` を使用することを推奨する。
++
+
+. 【必須】 個別定義の `ThreadLocal` 変数の削除を忘れないこと。特にスレッドプールの場合、スレッドが再利用されるので、個別定義の `ThreadLocal` 変数を削除しないと、メモリリークや、後続処理のロジックに影響を与える問題が発生する。 `ThreadLocal` 変数を `try-finnaly` のブロックで削除すること。
++
+.良い例
+[source,java]
+----
+objectThreadLocal.set(userInfo);
+try {
+  // ...
+}finally{
+  objectThreadLocal.remove();
+}
+----
+
+. 【必須】ロックをかけるソースコードの範囲を最小限にする。ロックを使用しなくて済むならば、ロックを使用しない。ソースコードのブロックのロックで済むならば、メソッド全部をロックする必要がない。オブジェクトのロックで済むならば、クラスのロックをしない。また、できるだけ、ロックされたソースコードのブロックの中で、RPC(Remote Process Call)メソッドを呼び出さない。
++
+
+. 【必須】複数のリソース、データベースのテーブル、オブジェクトにロックをかけるときに、ロック順序を一致にしなければならない。そうしないと、デッドロックが発生する可能性が高い。
++
+.説明:
+スレッド1がテーブル `A→B→C` の順番でロックをかけたら、スレッド2も同じ `A→B→C` の順番でロックをかける。
++
+
+. 【必須】ロックの取得で待ち状態になる処理方式では、 `try` ブロックの外でロックを取得する。かつ、ロックメソッドと `try` の間に、例外が発生するメソッドの呼び出しをしないこと。
++
+
+.良い例
+[source,java]
+----
+Lock lock = new XxxLock();
+// ...
+lock.lock();
+try {
+    doSomething();
+    doOthers();
+} finally {
+    lock.unlock();
+}
+----
++
+.悪い例
+[source,java]
+----
+Lock lock = new XxxLock();
+// ...
+try {
+    // ここで例外が発生すれば、finallyが実行される
+    doSomething();
+    // ロックの成功・失敗にかかわらず、finallyが実行される
+    lock.lock();
+    doOthers();
+} finally {
+    // ロックがかけられていない場合、llegalMonitorStateExceptionが発生する
+    lock.unlock();
+}
+----
++
+
+. 【必須】 `lock.tryLock()` を使用する場合、業務ロジックに入る前に、スレッドがロックを持っているか判定しなければならい。ロックのリリースは、上記ブロックのロック方式と同じ。
++
+.良い例
+[source,java]
+----
+Lock lock = new XxxLock();
+// ...
+boolean isLocked = lock.tryLock();
+if (isLocked) {
+    try {
+    doSomething();
+    doOthers();
+    } finally {
+        lock.unlock();
+    }
+}
+
+----
+
+. 【必須】同じレコードを同時に更新する可能性がある場合は、ロックが必要である。タイムスタンプか、バージョン番号を用いて判定する。同時更新の確率が少ない場合(<20%)は、楽観ロックを、それ以外の場合は、悲観ロックを使用する。
++
+
+. 【必須】マルチスレッドで定時タスクを実行する場合、 `Timer` ではなく、 `ScheduledExcetorService` を使用する。
++
+.説明:
+`Timer` で実行される複数の `TimeTask` は、その中の一つが例外をキャッチせず異常終了したときに、他のタスクも自動的に終了する。
+
+. 【推奨】金額などの重要情報の更新ロックは、悲観ロックの仕組みを採用する。
++
+
+. 【推奨】`CountDownLatch` を使用するときに、スレッドの終了で `countDown` メソッドを必ず呼び出す。例外をキャッチして、 `countDown` の実行を確保する。そうしないと、 `await` しているメインスレッドがタイムアップまで待つことに陥る可能性がある。
++
+
+. 【推奨】 `Random` クラスがスレッドセーフであるは、同じ `seed` の取得で性能に影響するため、マルチスレッド環境では、 `ThreadLocalRandom` を使用すること。
++
+
+. 【推奨】以下の例を参考して、ロックの2重検査(double-checked locking)を避ける。
++
+.悪い例
+[source,java]
+----
+public class LazyInitDemo {
+    private Helper helper = null; // 回避方法として、volatileをつける
+    public Helper getHelper() {
+        if (helper == null) {
+          synchronized(this) {
+              if (helper == null) {
+                  helper = new Helper();
+              }
+          }       
+        }
+        return helper;
+    }
+    // other methods and fields...
+}
+----
++
+. 【推奨】 マルチスレッド環境で、同じ変数に対して、1個のスレッドのみが更新、他のスレッドが参照だけである場合は、変数に `volatile` をつける。複数のスレッドが更新を行う場合は、`volatile` はスレッドセーフではない。 `AtomicInteger` と `AtomicLong` の使用を推奨する。
++
+
+. 【推奨】 `HashMap` がスレッドセーフではないので、マルチスレッド環境では、ロックをかけるか、 `ConcurrentHashMap` を使用すること。
++
+
+. 【推奨】 `ThreadLocal` の対象を `static` に宣言する。
+
+== セキュリティ
+
+. 【必須】ユーザの個人情報を表示と更新する機能では、必ず権限チェックのほかに、本人でることのチェックを行う。他のユーザ情報の閲覧と更新を絶対に防止すること。
++
+
+. 【必須】ユーザの重要情報を画面にそのまま表示してはいけない。クレジットカード番号の下4桁のみを表示することや、電話番号の中間4桁を****で表示することなどの対策を用意する。
++
+
+. 【必須】ユーザが入力したデータは、バインド変数としてSQL文のパラメータに設定する。入力データでSQL文を組み立てることを禁止する。
++
+
+. 【必須】ユーザの入力データに対して、必ず有効性チェックを行う。入力チェックを省略すると、各種セキュリティの攻撃が防げない。
++
+
+. 【必須】HTMLページにそのままユーザデータを表示してはいけない。HTMLエスケープしてから表示する。
++
+
+. 【必須】CSRF(Cross-siet request forgery)攻撃を防止するために、フォームのサブミットとAJAXリクエストにトークンチェックの仕組みを用意する。
++
+
+. 【必須】ショートメール、電子メールなどで認証コードを送る時に、回数と再送間隔に制限を設ける。無制限にすると、攻撃によってシステムリソースが無駄になり、他のユーザが影響が受ける恐れがある。
+
+== ユニットテスト
+
+. 【必須】良いユニットテストは、以下のAIR原則を守らなければならない。
++
+* A:Automic(自動化)
+* I:Independent(独立性)
+* R:Repeatable(繰り返し実行可能)
++
+. 【必須】ユニットテストは、全部自動実行できなけれならない。 `System.out` の出力を人の目で確認することを禁止する。必ず `assertXXXX` を用いて確認する。
++
+
+. 【必須】ユニットテストの独立性を担保する。テストメソッド間の呼び出しは禁止する。実行順序にも依存しない。
++
+
+. 【必須】ユニットテストは繰り返し実行できなけれならない。外部環境（ネットワーク、サービス、ミドルウェアなど）に依存しない。
++
+
+. 【必須】ユニットテストの対象は、メソッドであり、クラスやサブシステムに跨る試験を対象としない。
++
+
+. 【必須】ソースコードを追加したら、既存のテストコードが成功に実行できることを保証しなければならない。新規追加のソースコードでテストが失敗したら、そのテストコードも修正する。
++
+
+. 【必須】テストコードをプロジェクトのフォルダ: `src/test/java` に配置する。業務のソースコードと同じフォルダに配置してはいけない。
++
+
+. 【推奨】ユニットテストの基本目標は、テスト対象ステートメントのカバレージが70%以上である。コア・モジュールのステートメントと条件分岐カバレージは100%に達すること。
++
+
+. 【推奨】テストコードの作成に、以下のBCDE原則を適用すること。
++
+* B:Border、限界値テスト、ループの上限、特殊値、特殊の時間、データの順番などを考慮
+* C:Correct、正常な入力データで期待通りの結果が得られること
+* D:Design、設計ドキュメントの通りになること
+* E:Error、エラー・異常データを入力して、期待通りの結果が得られること
++
+
+. 【推奨】データベース関連のテストは、データベースにデータが存在することを前提にしていはいけない。プログラムで必要なデータを挿入して、テストを実行する。
++
+. 【推奨】データベース関連のテストは、自動ロールバックの仕組みを採用して、データベースにダーティ・データをいれないようにする。もしくは、テストデータにプリフィクス・サフィックスを追加してテストデータであることを示す。
++
+. 【参考】ユニットテストをしやすいように、業務のソースコードを作成するときに、以下のことを避ける。
++
+* コンストラクタでたくさんのことをする
+* グローバル変数とstaticメソッドが多い
+* 外部依存が多い
+* 条件文が多い
+
+== その他
+
+. 【必須】正規表現を使う場合、事前コンパイル機能を利用して、マッチング効率を向上させる。
++
+.説明:
+メソッドの中で、 `Pattern pattern = Pattern.compile(“rules”);`  を記述しなくて、クラスの `static`  属性として `pattern` を宣言して初期化する。
+
+. 【必須】 `Math.random()`  の戻り値が `double` であり、値の範囲は、 `0 <= x < 1` であるため、ゼロになる可能性もある。整数型のランタイム値を生成したい場合、 `Random` クラスの `nextInt()` と `netLong()` メソッドを使用する。
++
+
+. 【必須】ミリ秒の現在時刻を取得するために、 `System.currentTimeMillis()` を使用する。 `new Date().getTime()` を使用しない。ナノ秒を取得する場合、`System.nanoTime()` を使用する。
++
+
+. 【必須】 `SimpleDateFormat` で日付をフォーマットするときに、年を表す文字列は小文字の `yyyy` である、大文字の `YYYY` は、 `week in which year` (当日の週に該当する年)を表す。以下のことも注意してください。
++
+
+*  `M` は月を表す
+*  `m` は分を表す
+*  `H` は24時間制の時を表す
+*  `h` は12時間制の時を表す
+
+. 【推奨】画面 `View` を表すテンプレートファイルに複雑なロジックをいれない。
++
+
+. 【推奨】随時、不要なソースコードを整理する。基本は、削除する。再度利用可能性のあるソースコードをコメントしたうえ、 コメントした理由を追記する。
+
+
+
+
+
+
+
